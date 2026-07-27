@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.healcat.ledger",
+  "appName": "记账本",
+  "webDir": "www",
+  "appIconPath": "icon-512.png",
+  "server": {
+    "androidScheme": "https"
+  }
+}

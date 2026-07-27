@@ -1,0 +1,22 @@
+{
+  "name": "ledger-v055",
+  "version": "0.5.5",
+  "description": "微信/支付宝账单归集记账本（手机版 PWA + 安卓 APP）。纯本地存储、完全离线、开源免费。",
+  "private": true,
+  "scripts": {
+    "build": "node merge_v055.js",
+    "cap:add": "npx cap add android",
+    "cap:sync": "npx cap sync android",
+    "android": "npx cap sync android && cd android && ./gradlew assembleRelease",
+    "deploy:pages": "bash deploy_github.sh"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/android": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  },
+  "author": "Healcat",
+  "license": "MIT"
+}

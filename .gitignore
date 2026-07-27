@@ -1,0 +1,22 @@
+# 依赖（由 npm install 生成，Actions 云端安装）
+node_modules/
+
+# 临时部署目录（deploy_github.sh / deploy_gitee.sh 内部使用）
+.deploy_stage/
+
+# Capacitor 生成的原生工程与构建输出（由 Actions 的 cap add/sync + gradle 生成）
+android/
+www/
+
+# 合并生成的单文件产物（由 merge_v055.js / Actions 生成）
+记账本_fitWMV055.html
+
+# 打包产物
+*.apk
+*.aab
+*.keystore
+
+# OS / 编辑器
+.DS_Store
+Thumbs.db
+*.swp
