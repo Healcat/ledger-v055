@@ -30,9 +30,10 @@ jobs:
         run: |
           mkdir -p www
           cp 记账本_fitWMV055.html www/index.html
-          cp manifest.webmanifest icon-192.png icon-512.png icon-maskable-512.png www/ 2>/dev/null || true
+          cp manifest.webmanifest www/ 2>/dev/null || true
+          cp icon-192.png icon-512.png icon-maskable-512.png www/ 2>/dev/null || true
 
-      - name: Capacitor add android (generate native project)
+      - name: Capacitor add android (generate native project once)
         run: |
           if [ ! -d "android" ]; then npx cap add android; fi
 
@@ -53,6 +54,24 @@ jobs:
           yes | sdkmanager --licenses || true
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
+      - name: Auto-sign release with debug keystore (no secrets needed)
+        run: |
+          python3 - <<'PY'
+          import re
+          p = 'android/app/build.gradle'
+          s = open(p).read()
+          # 给 release buildType 注入 signingConfig signingConfigs.debug
+          pat = re.compile(r'(buildTypes\s*\{[^}]*?release\s*\{)([^}]*?)(\})', re.S)
+          def repl(m):
+              head, body, tail = m.group(1), m.group(2), m.group(3)
+              if 'signingConfig signingConfigs.debug' in body:
+                  return m.group(0)
+              return head + body + '\n            signingConfig signingConfigs.debug\n' + tail
+          s2 = pat.sub(repl, s, count=1)
+          open(p, 'w').write(s2)
+          print('patched' if s2 != s else 'no-change')
+          PY
+
       - name: Point gradle to Android SDK
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
 
@@ -61,18 +80,6 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew assembleRelease --no-daemon
-
-      - name: Sign APK (only if secrets are configured)
-        if: ${{ secrets.ANDROID_SIGNING_KEY != '' }}
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Publish APK to continuous Release
         uses: softprops/action-gh-release@v2
