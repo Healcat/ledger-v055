@@ -1,7 +1,8 @@
 // 将 V055 合并为单文件：把外部 storage.js 内联进 HTML，输出 记账本_fitWMV055.html（完全自包含）
 // 命名约定（用户指定）：自包含单文件 = 记账本_fitWMV055.html；依赖 storage.js 的版本 = index.html
 const fs = require('fs');
-const dir = 'C:/Users/Administrator/Desktop/记账本V055';
+const path = require('path');
+const dir = __dirname;   // 跨平台：脚本所在目录（CI=仓库根，本地 Windows 同目录），不再写死绝对路径
 const htmlPath = dir + '/index.html';            // 依赖版（含 <script src="storage.js">）
 const storagePath = dir + '/storage.js';
 const outPath = dir + '/记账本_fitWMV055.html';  // 输出：自包含单文件
